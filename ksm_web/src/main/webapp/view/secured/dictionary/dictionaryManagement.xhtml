@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+    <title>Dictionary Management</title>
+</h:head>
+<h:body>
+    <h:form id="dictionaryForm">
+        <p:tabView>
+            <!-- Tab for Dictionary Types -->
+            <p:tab title="Dictionary Types">
+                <p:dataTable var="type" value="#{dictionaryBean.dictionaryTypes}" editable="true" id="typeTable">
+                    <p:column headerText="ID">
+                        <h:outputText value="#{type.idDictionaryType}"/>
+                    </p:column>
+                    <p:column headerText="Name">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText value="#{type.name}"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:inputText value="#{type.name}"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    <p:column headerText="Description">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText value="#{type.description}"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:inputTextarea value="#{type.description}"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    <p:column>
+                        <p:commandButton value="Save" action="#{dictionaryBean.saveType(type)}" update="typeTable"/>
+                    </p:column>
+                </p:dataTable>
+
+                <p:commandButton value="Add Type" action="#{dictionaryBean.addType}" update="typeTable"/>
+            </p:tab>
+
+            <!-- Tab for Dictionary Values -->
+            <p:tab title="Dictionary Values">
+                <p:dataTable var="value" value="#{dictionaryBean.dictionaryValues}" editable="true" id="valueTable">
+                    <p:column headerText="ID">
+                        <h:outputText value="#{value.idDictionaryValue}"/>
+                    </p:column>
+                    <p:column headerText="Type">
+                        <h:outputText value="#{value.dictionaryType}"/>
+                    </p:column>
+                    <p:column headerText="Value">
+                        <p:cellEditor>
+                            <f:facet name="output">
+                                <h:outputText value="#{value.value}"/>
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:inputText value="#{value.value}"/>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    <p:column headerText="Editable">
+                        <h:outputText value="#{value.editable ? 'Yes' : 'No'}"/>
+                    </p:column>
+                    <p:column>
+                        <p:commandButton value="Save" action="#{dictionaryBean.saveValue(value)}" update="valueTable"/>
+                    </p:column>
+                </p:dataTable>
+
+                <p:commandButton value="Add Value" action="#{dictionaryBean.addValue}" update="valueTable"/>
+            </p:tab>
+        </p:tabView>
+    </h:form>
+</h:body>
+</html>
+	

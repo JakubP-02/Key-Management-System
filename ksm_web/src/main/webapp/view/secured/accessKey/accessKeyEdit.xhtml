@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<f:metadata>
+    <!-- Uruchamia metodę onLoad() w AccessKeyEditBB przy załadowaniu strony -->
+    <f:viewAction action="#{accessKeyEditBB.onLoad()}" />
+</f:metadata>
+
+<h:head>
+    <meta charset="utf-8" />
+    <title>Key System Management – Edycja klucza</title>
+</h:head>
+
+<h:body style="background-color: #eee; margin: 0.5em;">
+    
+    <p:panel header="Edycja rekordu" style="max-width: 800px;">
+
+        <!-- Formularz wyświetla się tylko, gdy accessKey != null -->
+        <h:form rendered="#{accessKeyEditBB.accessKey != null}">
+
+            <h:panelGrid columns="3" cellpadding="5">
+
+                <!-- Opis klucza (statusDescription) -->
+                <h:outputLabel for="ak-statusdesc" value="Opis klucza:" />
+                <p:inputText id="ak-statusdesc"
+                             value="#{accessKeyEditBB.accessKey.statusDescription}"
+                             required="true" requiredMessage="Podaj opis klucza"
+                             validatorMessage="co najwyżej 40 znaków"
+                             style="width: 300px;">
+                    <f:validateLength maximum="40" />
+                </p:inputText>
+                <p:message for="ak-statusdesc" />
+
+                <!-- Typ klucza: selectedTypeId -->
+                <h:outputLabel for="ak-type" value="Typ klucza:"
+                               style="vertical-align: top;" />
+                <p:selectOneMenu id="ak-type"
+                                 value="#{accessKeyEditBB.selectedTypeId}"
+                                 style="width: 300px;"
+                                 required="true"
+                                 requiredMessage="Podaj typ klucza">
+                    <f:selectItem itemLabel="Wybierz opcję" itemValue="#{null}"
+                                  noSelectionOption="true" />
+                    <f:selectItems value="#{accessKeyEditBB.keyTypes}"
+                                   var="type"
+                                   itemValue="#{type.idDictionaryValue}"
+                                   itemLabel="#{type.value}" />
+                </p:selectOneMenu>
+                <p:message for="ak-type" />
+
+                <!-- Status klucza: selectedStatusId -->
+                <h:outputLabel for="ak-status" value="Status klucza:"
+                               style="vertical-align: top;" />
+                <p:selectOneMenu id="ak-status"
+                                 value="#{accessKeyEditBB.selectedStatusId}"
+                                 style="width: 300px;"
+                                 required="true"
+                                 requiredMessage="Podaj status klucza">
+                    <f:selectItem itemLabel="Wybierz opcję" itemValue="#{null}"
+                                  noSelectionOption="true" />
+                    <f:selectItems value="#{accessKeyEditBB.keyStatuses}"
+                                   var="sts"
+                                   itemValue="#{sts.idDictionaryValue}"
+                                   itemLabel="#{sts.value}" />
+                </p:selectOneMenu>
+                <p:message for="ak-status" />
+
+                <!-- Lokal (Unit): selectedUnitId -->
+                <h:outputLabel for="ak-unit" value="Lokal:" />
+                <p:selectOneMenu id="ak-unit"
+                                 value="#{accessKeyEditBB.selectedUnitId}"
+                                 style="width: 300px;"
+                                 required="true"
+                                 requiredMessage="Wybierz lokal">
+                    <f:selectItem itemLabel="Wybierz opcję" itemValue="#{null}"
+                                  noSelectionOption="true" />
+                    <f:selectItems value="#{accessKeyEditBB.availableUnits}"
+                                   var="u"
+                                   itemValue="#{u.idUnit}"
+                                   itemLabel="#{u.address}" />
+                </p:selectOneMenu>
+                <p:message for="ak-unit" />
+
+            </h:panelGrid>
+
+            <p:messages id="msgs" globalOnly="true" />
+
+            <!-- Przycisk zapisu -->
+            <p:commandButton value="Zapisz"
+                             action="#{accessKeyEditBB.saveData()}"
+                             style="margin-right: 1em;"
+                             update="@form" />
+
+            <!-- Przycisk Anuluj / Powrót do listy kluczy -->
+            <p:button value="Anuluj" outcome="accessKeyList" />
+        </h:form>
+
+    </p:panel>
+
+</h:body>
+</html>

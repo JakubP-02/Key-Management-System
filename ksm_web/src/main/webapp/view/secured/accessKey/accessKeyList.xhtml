@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+	<meta charset="utf-8" />
+	<title>Lista kluczy – AccessKey</title>
+</h:head>
+
+<h:body style="background-color: #eee; margin: 0.5em;">
+
+	<!-- Panel do filtrowania (podobnie jak w unitList.xhtml) -->
+	<p:panel header="Opcje wyszukiwania" toggleable="true" collapsed="true"
+		style="margin-bottom: 1em;">
+		<h:form>
+			<h:panelGrid columns="2" cellpadding="5">
+				<!-- Przykład: wyszukiwanie po statusDescription -->
+				<h:outputLabel value="Opis statusu:" />
+				<p:inputText value="#{accessKeyListBB.statusDescription}" />
+
+				<p:commandButton value="Szukaj" update="form-table" />
+			</h:panelGrid>
+		</h:form>
+	</p:panel>
+
+	<!-- Komunikaty globalne -->
+	<p:messages />
+
+	<!-- Tabela z listą kluczy -->
+	<h:form id="form-table" style="margin-bottom:1em;">
+
+		<!-- Przycisk dodawania nowego wpisu -->
+		<p:commandButton value="Dodaj nowy wpis"
+			action="#{accessKeyListBB.newAccessKey()}" style="margin-bottom:1em;" />
+
+		<!-- Tabela PrimeFaces -->
+		<p:dataTable value="#{accessKeyListBB.list}" var="a"
+			id="accessKeyTable" style="width: 100%;">
+
+			<p:column headerText="ID">
+				<h:outputText value="#{a.idAccessKey}" />
+			</p:column>
+
+			<p:column headerText="Lokal">
+				<!-- Wyświetlamy np. adres lokalu, jeżeli jest wczytany -->
+				<h:outputText value="#{a.unit.address}" />
+			</p:column>
+
+			<p:column headerText="Typ klucza">
+				<h:outputText value="#{a.keyType.value}" />
+			</p:column>
+
+			<p:column headerText="Status klucza">
+				<h:outputText value="#{a.keyStatus.value}" />
+			</p:column>
+
+			<p:column headerText="Opis statusu">
+				<h:outputText value="#{a.statusDescription}" />
+			</p:column>
+
+			<p:column headerText="Opcje">
+				<!-- Edycja -->
+				<p:commandButton value="Edytuj"
+					action="#{accessKeyListBB.editAccessKey(a)}" />
+				<!-- Usunięcie -->
+				<p:commandButton value="Usuń"
+					action="#{accessKeyListBB.deleteAccessKey(a)}" update="@form" />
+			</p:column>
+
+		</p:dataTable>
+	</h:form>
+
+</h:body>
+</html>

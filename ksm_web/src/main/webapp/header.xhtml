@@ -1,0 +1,31 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<div class="header" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background-color: #f8f9fa; border-bottom: 1px solid #ddd;">
+		<!-- Logo -->
+		<h:outputLink value="#{request.contextPath}/view/secured/unit/unitList.xhtml" class="logo">
+			<h:graphicImage name="images/KMS_logo_256x256.png" alt="Logo"
+				style="width: 100px; height: auto;" />
+		</h:outputLink>
+
+		<!-- Rozwijane menu -->
+		<h:form>
+			<p:menuButton value="Menu" style="margin-right: 20px;">
+				<p:menuitem value="Lista Lokali" url="#{request.contextPath}/view/secured/unit/unitList.xhtml" />
+				<p:menuitem value="Zarządzanie Słownikiem" url="#{request.contextPath}/view/secured/dictionary/dictionaryM2.xhtml" />
+				<p:menuitem value="Zarządzanie Użytkownikami" url="#{request.contextPath}/view/secured/member/memberList.xhtml" />
+			</p:menuButton>
+		</h:form>
+
+		<!-- User Info -->
+		<div class="user-info" style="display: flex; align-items: center; gap: 10px;">
+			<p:outputLabel value="User: #{userBean.loggedUserName}" style="margin-right: 10px;" />
+			<h:form>
+				<p:commandButton value="Logout" action="#{userBean.logout}" icon="pi pi-sign-out" />
+			</h:form>
+		</div>
+	</div>
+
+</ui:composition>

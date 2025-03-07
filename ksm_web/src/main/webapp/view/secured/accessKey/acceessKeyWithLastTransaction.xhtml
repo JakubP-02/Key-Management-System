@@ -1,0 +1,152 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" template="/template.xhtml">
+
+
+	<ui:define name="content">
+		<f:metadata>
+			<f:event type="preRenderView" listener="#{accessKeyListBB.loadKeys}" />
+		</f:metadata>
+
+		<h:form id="form-table" style="margin-bottom:1em;">
+
+			<p:dataTable value="#{accessKeyListBB.keysWithTransactions}"
+				var="key" styleClass="dataTable">
+
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="Typ klucza" />
+					</f:facet>
+					<h:outputText value="#{key.keyType}" />
+				</p:column>
+
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="Status klucza" />
+					</f:facet>
+					<h:outputText value="#{key.keyStatus}" />
+				</p:column>
+
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="Opis" />
+					</f:facet>
+					<h:outputText value="#{key.description}" />
+				</p:column>
+
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="Data operacji" />
+					</f:facet>
+					<h:outputText value="#{key.transactionDate}">
+						<f:convertDateTime pattern="yyyy-MM-dd HH:mm" />
+					</h:outputText>
+				</p:column>
+
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="Kto ma klucz - imię" />
+					</f:facet>
+					<h:outputText value="#{key.firstName}" />
+				</p:column>
+
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="Kto ma klucz - nazwisko" />
+					</f:facet>
+					<h:outputText value="#{key.lastName}" />
+				</p:column>
+
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="Opcje" />
+					</f:facet>
+					<p:commandButton value="Edytuj"
+						action="#{accessKeyListBB.editKey(key)}" />
+				</p:column>
+
+			</p:dataTable>
+
+			<p:messages autoUpdate="true" />
+		</h:form>
+
+		<!-- Panel z operacjami -->
+		<p:panel header="Operacje" style="margin-top: 1em;">
+
+			<h:form id="form-operations">
+
+				<!-- Przycisk uruchamiający dialog -->
+				<p:commandButton value="Dodaj klucze"
+					actionListener="#{accessKeyListBB.prepareAddKeyDialog}"
+					oncomplete="PF('addKeyDialog').show()" process="@this"
+					update="addKeyForm" style="margin-right: 1em;" />
+
+
+				<ui:remove>
+					<p:commandButton value="Przypisz klucz"
+						action="#{accessKeyListBB.assignKey}" update="@form"
+						style="margin-right: 1em;" />
+
+					<p:commandButton value="Zwróć klucz"
+						action="#{accessKeyListBB.returnKey}" update="@form" />
+				</ui:remove>
+
+				<p:messages autoUpdate="true" />
+			</h:form>
+		</p:panel>
+
+		<!-- Dialog dla dodawania kluczy -->
+		<p:dialog header="Dodaj Klucze" widgetVar="addKeyDialog" modal="true"
+			resizable="false" width="400">
+			<h:form id="addKeyForm">
+				<p:panelGrid columns="2" cellpadding="5">
+
+					<p:outputLabel for="keyType" value="Typ klucza:"
+						styleClass="bold-label" />
+					<p:selectOneMenu id="keyType"
+						value="#{accessKeyListBB.newKey.keyType}" style="width: 100%;">
+						<f:selectItem itemLabel="-- Wybierz --" itemValue="#{null}" />
+						<f:selectItems value="#{accessKeyListBB.keyTypes}" var="type"
+							itemValue="#{type.id}" itemLabel="#{type.name}" />
+					</p:selectOneMenu>
+
+
+					<p:outputLabel for="description" value="Opis klucza:"
+						styleClass="bold-label" />
+					<p:inputTextarea id="description"
+						value="#{accessKeyListBB.newKey.description}" rows="5" cols="50"
+						maxlength="2048" autoResize="true" style="width: 100%;" />
+
+					<p:outputLabel for="quantity" value="Liczba kluczy:"
+						styleClass="bold-label" />
+					<p:spinner id="quantity" value="#{accessKeyListBB.newKey.quantity}"
+						min="1" max="10" step="1" />
+
+					<p:outputLabel for="idSource" value="Przekazujący:"
+						styleClass="bold-label" />
+					<p:selectOneMenu id="idSource" value="#{accessKeyListBB.newKey.idSource}" style="width: 100%;">
+						<f:selectItem itemLabel="-- Wybierz --" itemValue="#{null}" /> 
+						<f:selectItems value="#{accessKeyListBB.sourceMembers}" var="member" itemValue="#{member.id}" itemLabel="#{member.firstName} #{member.lastName}" />
+					</p:selectOneMenu>
+
+
+					<p:outputLabel for="details" value="Opis operacji:" styleClass="bold-label" />
+					<p:inputTextarea id="details" value="#{accessKeyListBB.newKey.details}" rows="5" cols="50"
+						maxlength="2048" autoResize="true" style="width: 100%;" />
+
+				</p:panelGrid>
+
+				<p:commandButton value="Dodaj" action="#{accessKeyListBB.addKeys}"
+					oncomplete="PF('addKeyDialog').hide()" update="form-table" />
+				<p:commandButton value="Anuluj" onclick="PF('addKeyDialog').hide()"
+					type="button" />
+			</h:form>
+		</p:dialog>
+
+
+
+
+	</ui:define>
+</ui:composition>

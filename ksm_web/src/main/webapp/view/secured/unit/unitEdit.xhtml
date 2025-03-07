@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<f:metadata>
+	<f:viewAction action="#{unitEditBB.onLoad()}" />
+</f:metadata>
+
+<h:head>
+	<meta charset="utf-8" />
+	<title>Key System Management</title>
+</h:head>
+
+<h:body style="background-color: #eee; margin: 0.5em;">
+
+	<p:panel header="Edycja rekordu">
+
+		<h:form rendered="#{unitEditBB.unit != null}">
+			<h:panelGrid columns="3" cellpadding="5">
+
+				<h:outputLabel for="u-address" value="Adres:" />
+				<p:inputText id="u-address" value="#{unitEditBB.unit.address}"
+					required="true" requiredMessage="Podaj adres"
+					validatorMessage="co najwyżej 40 znaków" style="width: 300px;">
+					<f:validateLength maximum="40" />
+				</p:inputText>
+				<p:message for="u-address" />
+				<h:outputLabel for="u-type" value="Typ lokalu:"
+					style="vertical-align: top;" />
+
+				<p:selectOneMenu id="u-type" value="#{unitEditBB.selectedTypeId}"
+					style="width: 300px;" required="true"
+					requiredMessage="Podaj Typ Lokalu">
+					<f:selectItem itemLabel="Wybierz opcję" itemValue="#{null}"
+						noSelectionOption="true" />
+					<f:selectItems value="#{unitEditBB.unitTypes}" var="type"
+						itemValue="#{type.idDictionaryValue}" itemLabel="#{type.value}" />
+				</p:selectOneMenu>
+				<p:message for="u-type" />
+				<h:outputLabel for="u-status" value="Status lokalu:"
+					style="vertical-align: top;" />
+
+				<p:selectOneMenu id="u-status" 	value="#{unitEditBB.selectedStatusId}" style="width: 300px;" required="true" requiredMessage="Podaj Status Lokalu">
+					<f:selectItem itemLabel="Wybierz opcję" itemValue="#{null}" 	noSelectionOption="true" />
+					<f:selectItems value="#{unitEditBB.unitStatuses}" var="status" 	itemValue="#{status.idDictionaryValue}" 	itemLabel="#{status.value}" />
+				</p:selectOneMenu>
+				
+				<p:message for="u-status" />
+				<h:outputLabel for="u-closed-at" value="Data zamknięcia:" />
+				<p:calendar id="u-closed-at" widgetVar="closedAtWVar"
+					value="#{unitEditBB.unit.closedAt}" pattern="yyyy-MM-dd HH:mm"
+					showTime="true" hourFormat="24" showButtonPanel="true"
+					required="false" style="width: 300px;">
+					<f:convertDateTime pattern="yyyy-MM-dd HH:mm" />
+				</p:calendar>
+				<p:commandButton value="Wyczyść datę" type="button"
+					onclick="PF('closedAtWVar').input.val(''); PF('closedAtWVar').updateModel(); return false;" />
+
+
+			</h:panelGrid>
+
+			<p:messages id="msgs" globalOnly="true" />
+
+			<p:commandButton value="Zapisz" action="#{unitEditBB.saveData()}"
+				style="margin-right: 1em;" update="@form" />
+
+			<p:button value="Anuluj" outcome="unitList" />
+		</h:form>
+
+	</p:panel>
+
+</h:body>
+
+</html>

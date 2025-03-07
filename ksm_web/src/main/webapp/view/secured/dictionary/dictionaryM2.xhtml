@@ -1,0 +1,76 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" template="/template.xhtml">
+
+
+	<ui:define name="content">
+		<h1>Zarządzanie słownikami</h1>
+
+    <h:form id="dictionaryForm">
+        
+                
+        <p:dataTable value="#{dictionaryM2Bean.dictionaryTypes}" var="type" 
+                     selection="#{dictionaryM2Bean.selectedType}" 
+                     selectionMode="single" 
+                     rowKey="#{type.idDictionaryType}" 
+                     style="margin-bottom: 20px;" 
+                     paginator="false" rows="10"
+                     update="valuesTable"
+                     allowUnsorting="false" 
+                     sortMode="single">
+                     
+            <p:ajax event="rowSelect" update=":dictionaryForm:valuesTable" /> 
+
+            <p:column sortBy="#{type.idDictionaryType}" headerText="ID">
+                <h:outputText value="#{type.idDictionaryType}" />
+            </p:column>
+            <p:column sortBy="#{type.name}" headerText="Name">
+                <h:outputText value="#{type.name}" />
+            </p:column>
+            <p:column sortBy="#{type.description}" headerText="Description">
+                <h:outputText value="#{type.description}" />
+            </p:column>
+        </p:dataTable>
+
+        
+        <p:toolbar>
+            <p:toolbarGroup>
+<!--             
+                <p:commandButton value="New" icon="pi pi-plus" actionListener="#{crudView.openNew}"
+                    update=":dialogs:manage-product-content" oncomplete="PF('manageProductDialog').show()"
+                    styleClass="ui-button-success" style="margin-right: .5rem">
+                    <p:resetInput target=":dialogs:manage-product-content" />
+                </p:commandButton>
+                <p:commandButton id="delete-products-button" value="#{crudView.deleteButtonMessage}"
+                    icon="pi pi-trash" actionListener="#{crudView.deleteSelectedProducts}"
+                    styleClass="ui-button-danger" disabled="#{!crudView.hasSelectedProducts()}" update="@this">
+                    <p:confirm header="Confirmation" message="Delete the selected products?"
+                        icon="pi pi-exclamation-triangle" />
+                </p:commandButton>
+ -->                
+            </p:toolbarGroup>
+        </p:toolbar>
+        
+        
+         <p:dataTable id="valuesTable" value="#{dictionaryM2Bean.filteredValues}" var="value" 
+                     style="margin-top: 20px;" 
+                     paginator="false"  rows="5"
+                     allowUnsorting="true" 
+                     sortMode="single">
+                     
+            <p:column sortBy="#{value.idDictionaryValue}" headerText="ID">
+                <h:outputText value="#{value.idDictionaryValue}" />
+            </p:column>
+            <p:column sortBy="#{value.value}" headerText="Value">
+                <h:outputText value="#{value.value}" />
+            </p:column>
+            <p:column sortBy="#{value.editable}" headerText="Editable">
+                <h:outputText value="#{value.editable}" />
+            </p:column>
+        </p:dataTable>
+        
+    </h:form>
+	</ui:define>
+</ui:composition>

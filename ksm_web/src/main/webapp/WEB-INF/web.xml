@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="https://jakarta.ee/xml/ns/jakartaee"
+	xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+	id="WebApp_ID" version="5.0">
+
+	<display-name>ksm_web</display-name>
+
+	<context-param>
+		<param-name>jakarta.faces.PROJECT_STAGE</param-name>
+		<param-value>Development</param-value>
+	</context-param>
+	<context-param>
+		<param-name>jakarta.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<context-param>
+		<param-name>primefaces.THEME</param-name>
+		<param-value>saga</param-value>
+	</context-param>
+
+	<welcome-file-list>
+		<welcome-file>view/secured/unit/unitList.xhtml</welcome-file>
+	</welcome-file-list>
+
+	<error-page>
+		<exception-type>jakarta.faces.application.ViewExpiredException</exception-type>
+		<location>/unitList.xhtml</location>
+	</error-page>
+
+	<servlet>
+		<servlet-name>Faces Servlet</servlet-name>
+		<servlet-class>jakarta.faces.webapp.FacesServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>*.xhtml</url-pattern>
+	</servlet-mapping>
+
+
+    <!--
+        1) Zasoby w /view/secured/* -> wymagają logowania i roli USER.
+        2) /view/public/* -> ogólnodostępne.
+    -->
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Secured Pages</web-resource-name>
+			<!-- Wszystkie pliki w /view/secured/ -->
+			<url-pattern>/view/secured/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>Biuro</role-name>
+			<role-name>Administrator</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Administrator Only</web-resource-name>
+			<url-pattern>/view/secured/member/memberList.xhtml</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>Administrator</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+
+    <!--
+        Definiujemy mechanizm logowania przez FORM:
+         - Gdy użytkownik chce wejść do /view/secured/*, a nie jest zalogowany,
+           serwer przekieruje go na /view/public/login.xhtml
+         - W razie błędu logowania -> /view/public/loginError.xhtml
+    -->
+    <login-config>
+        <auth-method>FORM</auth-method>
+        <form-login-config>
+            <form-login-page>/view/public/login.xhtml</form-login-page>
+            <form-error-page>/view/public/loginError.xhtml</form-error-page>
+        </form-login-config>
+    </login-config>
+
+    <!--
+       Definiujemy rolę, do której muszą należeć użytkownicy w bazie danych.
+       Upewnij się, że nazwa roli (USER) zgadza się z tym, co w tabeli ról w DB.
+    -->
+	<security-role>
+		<role-name>Biuro</role-name>
+	</security-role>
+	<security-role>
+		<role-name>Administrator</role-name>
+	</security-role>
+
+</web-app>

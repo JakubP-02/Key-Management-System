@@ -1,0 +1,224 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" template="/template.xhtml">
+
+
+	<ui:define name="content">
+
+		<f:metadata>
+			<f:event type="preRenderView" listener="#{memberListBB.loadMembers}" />
+		</f:metadata>
+
+
+		<p:panel header="Lista Użytkowników" style="margin-bottom: 1em;" />
+		<h:form id="member-form">
+
+			<!-- Tabela użytkowników -->
+			<p:dataTable value="#{memberListBB.members}" var="member"
+				style="margin-bottom: 20px;" id="memberTable">
+				<p:column headerText="Imię">
+					<h:outputText value="#{member.firstName}" />
+				</p:column>
+				<p:column headerText="Nazwisko">
+					<h:outputText value="#{member.lastName}" />
+				</p:column>
+				<p:column headerText="Email">
+					<h:outputText value="#{member.email}" />
+				</p:column>
+				<p:column headerText="Rola">
+					<h:outputText value="#{member.roleName}" />
+				</p:column>
+				<p:column headerText="Typ">
+					<h:outputText value="#{member.memberTypeName}" />
+				</p:column>
+				<p:column headerText="Status">
+					<h:outputText value="#{member.memberStatusName}" />
+				</p:column>
+				<p:column headerText="Edycja">
+					<p:commandButton value="Edytuj"
+						actionListener="#{memberListBB.loadSelectedMember(member.id)}"
+						oncomplete="PF('editMemberDialog').show()" process="@this"
+						update="editMemberForm" />
+				</p:column>
+
+
+			</p:dataTable>
+
+		</h:form>
+
+		<!-- Panel z operacjami -->
+		<p:panel header="Operacje" style="margin-top: 1em;">
+
+			<h:form id="form-operations">
+
+				<!-- Przycisk uruchamiający dialog -->
+				<p:commandButton value="Dodaj użytkownika"
+					oncomplete="PF('addMemberDialog').show()" process="@this"
+					update="addMemberForm" style="margin-right: 1em;" />
+
+				<p:messages autoUpdate="true" />
+			</h:form>
+		</p:panel>
+		<p:dialog header="Edycja użytkownika" widgetVar="editMemberDialog"
+			modal="true" resizable="false" width="700"
+			style="max-height: 70%; overflow-y: auto;">
+
+			<h:form id="editMemberForm">
+
+
+				<h:panelGrid columns="3" style="width: 100%; table-layout: fixed;"
+					columnClasses="labelColumn, inputColumn, messageColumn"
+					cellpadding="6">
+
+					<h:outputLabel for="firstNameEdit" value="Imię:" />
+					<p:inputText id="firstNameEdit"
+						value="#{memberListBB.selectedMember.firstName}" required="true"
+						requiredMessage="Imię jest wymagane" style="width: 100%;" />
+					<p:message for="firstNameEdit" />
+
+					<h:outputLabel for="lastNameEdit" value="Nazwisko:" />
+					<p:inputText id="lastNameEdit"
+						value="#{memberListBB.selectedMember.lastName}" required="true"
+						requiredMessage="Nazwisko jest wymagane" style="width: 100%;" />
+					<p:message for="lastNameEdit" />
+
+					<h:outputLabel for="emailEdit" value="Email:" />
+					<p:inputText id="emailEdit"
+						value="#{memberListBB.selectedMember.email}" required="true"
+						requiredMessage="Email jest wymagany"
+						validatorMessage="Niepoprawny format email">
+						<f:validateRegex
+							pattern="^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$" />
+					</p:inputText>
+					<p:message for="emailEdit" />
+
+
+					<h:outputLabel for="roleEdit" value="Rola:" />
+					<p:selectOneMenu id="roleEdit"
+						value="#{memberListBB.selectedMember.idRole}" required="true"
+						requiredMessage="Rola jest wymagana" style="width: 100%;">
+						<f:selectItems value="#{memberListBB.roles}" var="role"
+							itemValue="#{role.id}" itemLabel="#{role.name}" />
+					</p:selectOneMenu>
+					<p:message for="roleEdit" />
+
+					<h:outputLabel for="memberTypeEdit" value="Typ użytkownika:" />
+					<p:selectOneMenu id="memberTypeEdit"
+						value="#{memberListBB.selectedMember.idMemberType}"
+						required="true" requiredMessage="Typ użytkownika jest wymagany"
+						style="width: 100%;">
+						<f:selectItems value="#{memberListBB.memberTypes}" var="type"
+							itemValue="#{type.id}" itemLabel="#{type.name}" />
+					</p:selectOneMenu>
+					<p:message for="memberTypeEdit" />
+
+					<h:outputLabel for="memberStatusEdit" value="Status użytkownika:" />
+					<p:selectOneMenu id="memberStatusEdit"
+						value="#{memberListBB.selectedMember.idMemberStatus}"
+						required="true" requiredMessage="Status użytkownika jest wymagany"
+						style="width: 100%;">
+						<f:selectItems value="#{memberListBB.memberStatuses}" var="status"
+							itemValue="#{status.id}" itemLabel="#{status.name}" />
+					</p:selectOneMenu>
+					<p:message for="memberStatusEdit" />
+
+				</h:panelGrid>
+
+				<!-- Przyciski akcji -->
+				<p:panelGrid columns="2"
+					style="width: 100%; margin-top: 20px; text-align: center;">
+					<p:commandButton value="Zapisz"
+						actionListener="#{memberListBB.updateMember}"
+						update="editMemberForm member-form" process="@form"
+						oncomplete="if (!args.validationFailed) PF('editMemberDialog').hide();" />
+
+					<p:commandButton value="Anuluj"
+						onclick="PF('editMemberDialog').hide()" type="button" />
+				</p:panelGrid>
+
+			</h:form>
+		</p:dialog>
+
+
+
+
+		<!-- Dialog dla dodawania usera -->
+		<p:dialog header="Dodaj użytkownika" widgetVar="addMemberDialog"
+			modal="true" resizable="false" width="700"
+			style="max-height: 70%; overflow-y: auto;">
+
+			<h:form id="addMemberForm">
+
+				<h:panelGrid columns="3" style="width: 100%; table-layout: fixed;"
+					columnClasses="labelColumn, inputColumn, messageColumn"
+					cellpadding="6">
+
+					<h:outputLabel for="firstName" value="Imię:" />
+					<p:inputText id="firstName"
+						value="#{memberListBB.newMember.firstName}" required="true"
+						requiredMessage="Imię jest wymagane" style="width: 100%;" />
+					<p:message for="firstName" />
+
+					<h:outputLabel for="lastName" value="Nazwisko:" />
+					<p:inputText id="lastName"
+						value="#{memberListBB.newMember.lastName}" required="true"
+						requiredMessage="Nazwisko jest wymagane" style="width: 100%;" />
+					<p:message for="lastName" />
+
+					<h:outputLabel for="email" value="Email:" />
+					<p:inputText id="email" value="#{memberListBB.newMember.email}"
+						required="true" requiredMessage="Email jest wymagany"
+						validatorMessage="Niepoprawny format email">
+						<f:validateRegex
+							pattern="^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$" />
+					</p:inputText>
+					<p:message for="email" />
+
+					<h:outputLabel for="password" value="Hasło:" />
+					<p:password id="password"
+						value="#{memberListBB.newMember.password}" required="true"
+						requiredMessage="Hasło jest wymagane" style="width: 100%;" />
+					<p:message for="password" />
+
+					<h:outputLabel for="role" value="Rola:" />
+					<p:selectOneMenu id="role" value="#{memberListBB.newMember.idRole}"
+						required="true" requiredMessage="Rola jest wymagana"
+						style="width: 100%;">
+						<f:selectItems value="#{memberListBB.roles}" var="role"
+							itemValue="#{role.id}" itemLabel="#{role.name}" />
+					</p:selectOneMenu>
+					<p:message for="role" />
+
+					<h:outputLabel for="memberType" value="Typ użytkownika:" />
+					<p:selectOneMenu id="memberType"
+						value="#{memberListBB.newMember.idMemberType}" required="true"
+						requiredMessage="Typ użytkownika jest wymagany"
+						style="width: 100%;">
+						<f:selectItems value="#{memberListBB.memberTypes}" var="type"
+							itemValue="#{type.id}" itemLabel="#{type.name}" />
+					</p:selectOneMenu>
+					<p:message for="memberType" />
+
+				</h:panelGrid>
+
+				<!-- Przyciski akcji -->
+				<p:panelGrid columns="2"
+					style="width: 100%; margin-top: 20px; text-align: center;">
+					<p:commandButton value="Dodaj"
+						actionListener="#{memberListBB.addMember}"
+						update="addMemberForm member-form" process="@form"
+						oncomplete="if (!args.validationFailed) PF('addMemberDialog').hide();" />
+
+					<p:commandButton value="Anuluj"
+						onclick="PF('addMemberDialog').hide()" type="button" />
+				</p:panelGrid>
+
+			</h:form>
+		</p:dialog>
+
+
+
+	</ui:define>
+</ui:composition>

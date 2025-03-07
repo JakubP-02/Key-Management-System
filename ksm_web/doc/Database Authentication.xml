@@ -1,0 +1,75 @@
+<!-- ============================================ -->
+<!-- Konfiguracja autentykacji przez bazę danych. -->
+<!-- Dla WildFly 34.0.1							  -->
+<!-- ============================================ -->
+
+		
+		<!-- Definicja datasource keysDS-->
+        <subsystem xmlns="urn:jboss:domain:datasources:7.2">
+            <datasources>
+                <datasource jndi-name="java:/keysDB" pool-name="keysDS">
+                    <connection-url>jdbc:mysql://localhost:3306/ksm</connection-url>
+                    <driver-class>com.mysql.cj.jdbc.Driver</driver-class>
+                    <driver>mysql</driver>
+                    <security user-name="root"/>
+                    <validation>
+                        <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLValidConnectionChecker"/>
+                        <validate-on-match>true</validate-on-match>
+                        <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLExceptionSorter"/>
+                    </validation>
+                </datasource>
+                <drivers>
+                    <driver name="mysql" module="com.mysql">
+                        <driver-class>com.mysql.cj.jdbc.Driver</driver-class>
+                    </driver>
+                </drivers>
+            </datasources>
+        </subsystem>
+				
+
+
+        <subsystem xmlns="urn:wildfly:elytron:community:18.0" final-providers="combined-providers" disallowed-providers="OracleUcrypto">
+            <security-domains>
+				
+				<!-- Definicja security-domain keysSecurityDomain -->
+                <security-domain name="keysSecurityDomain" default-realm="keysJdbcRealm" permission-mapper="default-permission-mapper">
+                    <realm name="keysJdbcRealm" role-decoder="from-roles-attribute"/>
+                </security-domain>
+            </security-domains>
+
+            <security-realms>
+                <!-- Definicja jdbc-realm keysJdbcRealm -->
+				<jdbc-realm name="keysJdbcRealm">
+                    <principal-query sql="SELECT password FROM member WHERE email = ?" data-source="keysDS">
+                        <clear-password-mapper password-index="1"/>
+                    </principal-query>
+                    <principal-query sql="SELECT r.name FROM member m JOIN role r ON m.id_role = r.id_role WHERE m.email = ?" data-source="keysDS">
+                        <attribute-mapping>
+                            <attribute to="roles" index="1"/>
+                        </attribute-mapping>
+                    </principal-query>
+                </jdbc-realm>
+            </security-realms>
+
+            <mappers>
+                <!-- Mapowanie ról -->
+                <simple-role-decoder name="from-roles-attribute" attribute="roles"/>
+            </mappers>
+
+            <http>
+				<!-- ustawienie fabryki dla security-domain-->
+                <http-authentication-factory name="keysHttpAuth" security-domain="keysSecurityDomain" http-server-mechanism-factory="global">
+                    <mechanism-configuration>
+                        <mechanism mechanism-name="FORM"/> <!-- mechanizm FORM -->
+                    </mechanism-configuration>
+                </http-authentication-factory>
+            </http>
+        </subsystem>
+			
+		<!-- Rejestracja w undertow. Utworzenie application-security-domain keysApplicationDomain-->
+        <subsystem xmlns="urn:jboss:domain:undertow:14.0" default-virtual-host="default-host" default-servlet-container="default" default-server="default-server" statistics-enabled="${wildfly.undertow.statistics-enabled:${wildfly.statistics-enabled:false}}" default-security-domain="other">
+            <application-security-domains>
+                <application-security-domain name="keysApplicationDomain" http-authentication-factory="keysHttpAuth"/>
+            </application-security-domains>
+        </subsystem>
+			
